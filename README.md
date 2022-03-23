@@ -1,1 +1,1 @@
-# matrix-algebra-rs
+# matrix-algebra
