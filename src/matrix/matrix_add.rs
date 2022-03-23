@@ -1,49 +1,25 @@
 use super::Matrix;
 use core::ops::Add;
 
-impl<T: Add<Output = T> + Copy + PartialEq> Add for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn add(self, rhs: Self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e + rhs.get(row, col));
+#[macro_export]
+macro_rules! matrix_add {
+  ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
+    impl<$ScalarType: Add<Output = $ScalarType> + Copy + PartialEq> Add<$RHS> for $LHS {
+      type Output = Matrix<$ScalarType>;
+      fn add(self, rhs: $RHS) -> Self::Output {
+        let mut res: Vec<$ScalarType> = vec![];
+        for (e, row, col) in self.iter() {
+          res.push(*e + rhs.get(row, col));
+        }
+        return Matrix::create_from_data(res, self.n_rows, self.n_cols);
+      }
     }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
+  };
 }
-
-impl<T: Add<Output = T> + Copy + PartialEq> Add<&Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn add(self, rhs: &Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e + rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Add<Output = T> + Copy + PartialEq> Add<Matrix<T>> for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn add(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e + rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Add<Output = T> + Copy + PartialEq> Add<Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn add(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e + rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
+matrix_add!(&Matrix<T>, &Matrix<T>, T);
+matrix_add!(Matrix<T>, Matrix<T>, T);
+matrix_add!(&Matrix<T>, Matrix<T>, T);
+matrix_add!(Matrix<T>, &Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {

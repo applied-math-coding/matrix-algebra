@@ -1,49 +1,25 @@
 use super::Matrix;
 use core::ops::{Mul, Rem};
 
-impl<T: Mul<Output = T> + Copy + PartialEq> Rem for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn rem(self, rhs: Self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e * rhs.get(row, col));
+#[macro_export]
+macro_rules! elementw_mult {
+  ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
+    impl<$ScalarType: Mul<Output = $ScalarType> + Copy + PartialEq> Rem<$RHS> for $LHS {
+      type Output = Matrix<$ScalarType>;
+      fn rem(self, rhs: $RHS) -> Self::Output {
+        let mut res: Vec<$ScalarType> = vec![];
+        for (e, row, col) in self.iter() {
+          res.push(*e * rhs.get(row, col));
+        }
+        return Matrix::create_from_data(res, self.n_rows, self.n_cols);
+      }
     }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
+  };
 }
-
-impl<T: Mul<Output = T> + Copy + PartialEq> Rem<&Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn rem(self, rhs: &Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e * rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Mul<Output = T> + Copy + PartialEq> Rem<Matrix<T>> for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn rem(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e * rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Mul<Output = T> + Copy + PartialEq> Rem<Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn rem(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e * rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
+elementw_mult!(&Matrix<T>, &Matrix<T>, T);
+elementw_mult!(Matrix<T>, Matrix<T>, T);
+elementw_mult!(&Matrix<T>, Matrix<T>, T);
+elementw_mult!(Matrix<T>, &Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {

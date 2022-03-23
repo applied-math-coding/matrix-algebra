@@ -1,27 +1,23 @@
 use super::Matrix;
 use core::ops::Neg;
 
-impl<T: Neg<Output = T> + Copy + PartialEq> Neg for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn neg(self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, _, _) in self.iter() {
-      res.push(-*e);
+#[macro_export]
+macro_rules! matrix_neg {
+  ($RHS:ty, $ScalarType:tt ) => {
+    impl<$ScalarType: Neg<Output = $ScalarType> + Copy + PartialEq> Neg for $RHS {
+      type Output = Matrix<$ScalarType>;
+      fn neg(self) -> Self::Output {
+        let mut res: Vec<$ScalarType> = vec![];
+        for (e, _, _) in self.iter() {
+          res.push(-*e);
+        }
+        return Matrix::create_from_data(res, self.n_rows, self.n_cols);
+      }
     }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
+  };
 }
-
-impl<T: Neg<Output = T> + Copy + PartialEq> Neg for Matrix<T> {
-  type Output = Matrix<T>;
-  fn neg(self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, _, _) in self.iter() {
-      res.push(-*e);
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
+matrix_neg!(&Matrix<T>, T);
+matrix_neg!(Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {

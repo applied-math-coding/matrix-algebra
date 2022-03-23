@@ -1,49 +1,25 @@
 use super::Matrix;
 use core::ops::Div;
 
-impl<T: Div<Output = T> + Copy + PartialEq> Div for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn div(self, rhs: Self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e / rhs.get(row, col));
+#[macro_export]
+macro_rules! matrix_div {
+  ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
+    impl<$ScalarType: Div<Output = $ScalarType> + Copy + PartialEq> Div<$RHS> for $LHS {
+      type Output = Matrix<$ScalarType>;
+      fn div(self, rhs: $RHS) -> Self::Output {
+        let mut res: Vec<$ScalarType> = vec![];
+        for (e, row, col) in self.iter() {
+          res.push(*e / rhs.get(row, col));
+        }
+        return Matrix::create_from_data(res, self.n_rows, self.n_cols);
+      }
     }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
+  };
 }
-
-impl<T: Div<Output = T> + Copy + PartialEq> Div<&Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn div(self, rhs: &Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e / rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Div<Output = T> + Copy + PartialEq> Div<Matrix<T>> for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn div(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e / rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Div<Output = T> + Copy + PartialEq> Div<Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn div(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e / rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
+matrix_div!(&Matrix<T>, &Matrix<T>, T);
+matrix_div!(Matrix<T>, Matrix<T>, T);
+matrix_div!(&Matrix<T>, Matrix<T>, T);
+matrix_div!(Matrix<T>, &Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {

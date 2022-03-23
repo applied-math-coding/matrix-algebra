@@ -1,49 +1,25 @@
 use super::Matrix;
 use core::ops::Sub;
 
-impl<T: Sub<Output = T> + Copy + PartialEq> Sub for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn sub(self, rhs: Self) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e - rhs.get(row, col));
+#[macro_export]
+macro_rules! matrix_subtraction {
+  ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
+    impl<$ScalarType: Sub<Output = $ScalarType> + Copy + PartialEq> Sub<$RHS> for $LHS {
+      type Output = Matrix<$ScalarType>;
+      fn sub(self, rhs: $RHS) -> Self::Output {
+        let mut res: Vec<$ScalarType> = vec![];
+        for (e, row, col) in self.iter() {
+          res.push(*e - rhs.get(row, col));
+        }
+        return Matrix::create_from_data(res, self.n_rows, self.n_cols);
+      }
     }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
+  };
 }
-
-impl<T: Sub<Output = T> + Copy + PartialEq> Sub<&Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn sub(self, rhs: &Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e - rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Sub<Output = T> + Copy + PartialEq> Sub<Matrix<T>> for &Matrix<T> {
-  type Output = Matrix<T>;
-  fn sub(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e - rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
-
-impl<T: Sub<Output = T> + Copy + PartialEq> Sub<Matrix<T>> for Matrix<T> {
-  type Output = Matrix<T>;
-  fn sub(self, rhs: Matrix<T>) -> Self::Output {
-    let mut res: Vec<T> = vec![];
-    for (e, row, col) in self.iter() {
-      res.push(*e - rhs.get(row, col));
-    }
-    return Matrix::create_from_data(res, self.n_rows, self.n_cols);
-  }
-}
+matrix_subtraction!(&Matrix<T>, &Matrix<T>, T);
+matrix_subtraction!(Matrix<T>, &Matrix<T>, T);
+matrix_subtraction!(&Matrix<T>, Matrix<T>, T);
+matrix_subtraction!(Matrix<T>, Matrix<T>, T);
 
 #[cfg(test)]
 mod tests {
