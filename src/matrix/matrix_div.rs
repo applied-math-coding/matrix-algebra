@@ -1,7 +1,6 @@
 use super::Matrix;
 use core::ops::Div;
 
-#[macro_export]
 macro_rules! matrix_div {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Div<Output = $ScalarType> + Copy + PartialEq> Div<$RHS> for $LHS {

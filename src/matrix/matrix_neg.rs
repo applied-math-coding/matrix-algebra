@@ -1,7 +1,6 @@
 use super::Matrix;
 use core::ops::Neg;
 
-#[macro_export]
 macro_rules! matrix_neg {
   ($RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Neg<Output = $ScalarType> + Copy + PartialEq> Neg for $RHS {

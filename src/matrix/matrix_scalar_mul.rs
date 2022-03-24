@@ -1,10 +1,6 @@
-use super::Matrix;
+use super::{scalar::Scalar, Matrix};
 use core::ops::Mul;
 
-#[derive(PartialEq, Debug, Clone)]
-pub struct Scalar<T>(T);
-
-#[macro_export]
 macro_rules! scalar_mult {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Mul<Output = $ScalarType> + Copy> Mul<$RHS> for $LHS {
@@ -20,7 +16,6 @@ scalar_mult!(&Scalar<T>, Scalar<T>, T);
 scalar_mult!(&Scalar<T>, &Scalar<T>, T);
 scalar_mult!(Scalar<T>, &Scalar<T>, T);
 
-#[macro_export]
 macro_rules! scalar_matrix_mult {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Mul<Output = $ScalarType> + Copy + PartialEq> Mul<$RHS> for $LHS {
@@ -40,7 +35,6 @@ scalar_matrix_mult!(Scalar<T>, &Matrix<T>, T);
 scalar_matrix_mult!(&Scalar<T>, Matrix<T>, T);
 scalar_matrix_mult!(&Scalar<T>, &Matrix<T>, T);
 
-#[macro_export]
 macro_rules! scalar_type_matrix_mult {
   ($LHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Mul<Output = $ScalarType> + Copy + PartialEq> Mul<$ScalarType> for $LHS {

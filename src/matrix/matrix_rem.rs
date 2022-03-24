@@ -1,7 +1,6 @@
 use super::Matrix;
 use core::ops::{Mul, Rem};
 
-#[macro_export]
 macro_rules! elementw_mult {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Mul<Output = $ScalarType> + Copy + PartialEq> Rem<$RHS> for $LHS {

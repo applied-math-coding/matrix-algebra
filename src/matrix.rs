@@ -3,13 +3,16 @@ mod matrix_div;
 mod matrix_iter_mut;
 mod matrix_iterator;
 mod matrix_mul;
-mod matrix_scalar_mul;
-mod matrix_rem;
-mod matrix_sub;
 mod matrix_neg;
+mod matrix_rem;
+mod matrix_scalar_mul;
+mod matrix_sub;
 use matrix_iter_mut::MatrixIteratorMut;
 use matrix_iterator::MatrixIterator;
+pub mod scalar;
 
+/// A matrix can be created by use of any scalar type that as the very least
+/// implements `Copy` and `PartialEq`.
 #[derive(PartialEq, Debug, Clone)]
 pub struct Matrix<T: Copy + PartialEq> {
   data: Vec<T>,
@@ -18,6 +21,7 @@ pub struct Matrix<T: Copy + PartialEq> {
 }
 
 impl<T: Copy + PartialEq> Matrix<T> {
+  /// Creates a matrix by using the given 2-d vector.
   pub fn new(mut v: Vec<Vec<T>>) -> Matrix<T> {
     let n_rows = v.len();
     let n_cols = v[0].len();
@@ -34,6 +38,8 @@ impl<T: Copy + PartialEq> Matrix<T> {
     }
   }
 
+  /// Creates a matrix by using the 1-d vector. The matrix is 'filled' row after row
+  /// from the linear data structure.
   pub fn create_from_data(data: Vec<T>, n_rows: usize, n_cols: usize) -> Matrix<T> {
     if data.len() != n_rows * n_cols {
       panic!("not compatible dimension!");
@@ -45,10 +51,12 @@ impl<T: Copy + PartialEq> Matrix<T> {
     }
   }
 
+  /// Obtain the element at row `i` and column `j`.
   pub fn get(&self, i: usize, j: usize) -> T {
     return self.data[i * self.n_cols + j];
   }
 
+  /// Obtain the `i`'th row as a 1-d matrix.
   pub fn get_row(&self, i: usize) -> Matrix<T> {
     let mut row = vec![];
     for e in &self.data[i * self.n_cols..(i + 1) * self.n_cols] {
@@ -58,6 +66,7 @@ impl<T: Copy + PartialEq> Matrix<T> {
     Matrix::create_from_data(row, 1, n_cols)
   }
 
+  /// Obtain the `i`'th column as a 1-d matrix.
   pub fn get_col(&self, i: usize) -> Matrix<T> {
     let col = self
       .iter()
@@ -68,14 +77,19 @@ impl<T: Copy + PartialEq> Matrix<T> {
     Matrix::create_from_data(col, n_rows, 1)
   }
 
+  /// Create an immutable iterator over the matrix.
+  /// The iteration is performed row after row.
   pub fn iter<'a>(&'a self) -> MatrixIterator<'a, T> {
     MatrixIterator::new(0, 0, 0, &self.data, self.n_rows, self.n_cols)
   }
 
+  /// Create an mutable iterator over the matrix.
+  /// The iteration is performed row after row.
   pub fn iter_mut<'a>(&'a mut self) -> MatrixIteratorMut<'a, T> {
     MatrixIteratorMut::new(0, 0, &mut self.data, self.n_rows, self.n_cols)
   }
 
+  /// Transposes a copy of the matrix and returns the result.
   pub fn trans(&self) -> Matrix<T> {
     let mut data = vec![];
     for j in 0..self.n_cols {

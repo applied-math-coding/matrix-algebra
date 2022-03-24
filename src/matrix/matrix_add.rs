@@ -1,7 +1,6 @@
 use super::Matrix;
 use core::ops::Add;
 
-#[macro_export]
 macro_rules! matrix_add {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Add<Output = $ScalarType> + Copy + PartialEq> Add<$RHS> for $LHS {

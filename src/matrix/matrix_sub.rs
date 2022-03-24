@@ -1,7 +1,6 @@
 use super::Matrix;
 use core::ops::Sub;
 
-#[macro_export]
 macro_rules! matrix_subtraction {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<$ScalarType: Sub<Output = $ScalarType> + Copy + PartialEq> Sub<$RHS> for $LHS {

@@ -2,7 +2,6 @@ use super::Matrix;
 use core::ops::{Add, Mul};
 use std::iter::Sum;
 
-#[macro_export]
 macro_rules! matrix_mult {
   ($LHS:ty, $RHS:ty, $ScalarType:tt ) => {
     impl<
