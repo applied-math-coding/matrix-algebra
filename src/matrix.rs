@@ -10,6 +10,8 @@ mod matrix_sub;
 use matrix_iter_mut::MatrixIteratorMut;
 use matrix_iterator::MatrixIterator;
 pub mod scalar;
+pub mod func;
+mod func_apply;
 
 /// A matrix can be created by use of any scalar type that as the very least
 /// implements `Copy` and `PartialEq`.
